@@ -11,7 +11,7 @@ contract Will {
 
     // 생성자 : Solidity 스마트 계약을 배포할 때 실행되는 특별한 함수로 생성자를 통해 오브젝트를 만든다. 초기값을 설정할 수 있다.
     // payable : 함수가 이더를 보내고 받을 수 있게 만든다.
-    constructor() payable public {
+    constructor() payable {
         owner = msg.sender; // msg sender represents address that is being called
         fortune = msg.value; // msg value tells us how much ether is being sent
         deceased = false;

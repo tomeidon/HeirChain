@@ -1,0 +1,68 @@
+{
+	"compiler": {
+		"version": "0.8.6+commit.11564f7e"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "payable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address payable",
+						"name": "wallet",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "setInheritance",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"heir.sol": "Will"
+		},
+		"evmVersion": "berlin",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"heir.sol": {
+			"keccak256": "0x372c3cec9e14989bbe3b0e314fc7d0a89c982dc74b3386c7bb868042b771d000",
+			"urls": [
+				"bzz-raw://d369aeff9afec3253c9a562106bb47b5f16811e7072bd3926aee001ce27ae5ff",
+				"dweb:/ipfs/QmRqHRieoa7sqpLJbbYRxR3dp8pM6jsWYFCpD53DvcJ6y2"
+			]
+		}
+	},
+	"version": 1
+}
