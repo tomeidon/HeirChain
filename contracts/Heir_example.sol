@@ -66,34 +66,4 @@ contract Heir {
     }
 }
 
-    //미리 Approve를 해놓았을 때 임의로 자산을 빼갈 수 없도록, 토큰 전송과 관련한 기능을 처리하는 함수의 선행 조건(modifier)
-    // enum status{
-    //     valid,
-    //     completed,
-    //     canceled
-    // }
-    // struct heir{
-    //     uint256 lastActionBlock; // 마지막 블록
-    //     uint256 actionInterval; //?
-    //     address collectionAddress; // 누구 주소?
-    //     uint256 collectionId; // 내 아이디?
-    //     address willer;
-    //     address recipient; 
-    //     uint256 willOrderId;
-    //     enum status;
-    // }
-    // function depositAndSetTimer(
-    //     address recipient,
-    //     address collectionAddress,
-    //     uint256 collectionId,
-    //     uint256 actionInterval
-    // ) public {}
-    // function resetActionBlock(
-    //     uint256 willOrderId
-    // ) onlyWiller(willOrderId) private{}
-    // function claimWill(
-    //     uint256 willOrderId
-    // ) onlyRecipien(willOrderId) public{}
-    // modifier onlyWiller(uint256 willOrderId)
-    // modifier onlyRecipient(uint256 willOrderId)
 
