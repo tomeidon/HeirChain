@@ -1,59 +1,75 @@
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity ^0.8.0;
 
-// 유언장 스마트 계약 : 어떤 할아버지가 돌아가시면서 증손자에게는 20 이더를, 증손녀에게는 10 이더를 주기로 했다면?
-contract Will {
-    // 확인 사항 3가지
-    // 1. 할아버지가 정말로 돌아가셨는지, 2. 증여하는 유산은 어느 정도인지, 3. 증여자의 주소(지갑 주소)
+interface IERC20 {
 
-    bool    deceased;
-    uint    fortune;
-    address owner;
+    function totalSupply() external view returns (uint256);
+    function balanceOf(address account) external view returns (uint256);
+    function allowance(address owner, address spender) external view returns (uint256);
 
-    // 생성자 : Solidity 스마트 계약을 배포할 때 실행되는 특별한 함수로 생성자를 통해 오브젝트를 만든다. 초기값을 설정할 수 있다.
-    // payable : 함수가 이더를 보내고 받을 수 있게 만든다.
-    constructor() payable {
-        owner = msg.sender; // msg sender represents address that is being called
-        fortune = msg.value; // msg value tells us how much ether is being sent
-        deceased = false;
+    function transfer(address recipient, uint256 amount) external returns (bool);
+    function approve(address spender, uint256 amount) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+}
+
+contract Heir is ERC20, WithFees {
+    using SafeMath for uint256;
+    
+
+    /////////////////////////////// klaytn approve
+    function approve(address spender, uint256 value) public returns (bool) {
+        _approve(msg.sender, spender, value);
+        return true;
+    }
+    function _approve(address owner, address spender, uint256 value) internal {
+        require(owner != address(0), "ERC20: approve from the zero address");
+        require(spender != address(0), "ERC20: approve to the zero address");
+
+        _allowances[owner][spender] = value;
+        emit Approval(owner, spender, value);
+    }
+    /////////////////////////////// end
+
+    //////////////TRANSFERS AND APPROVAL OF ERC-20 TOKENS FROM A SOLIDITY SMART CONTRACT
+    function approve(address spender, uint256 amount) external returns (bool);
+
+    function approve(address delegate, uint256 numTokens) public override returns (bool) {
+        allowed[msg.sender][delegate] = numTokens;
+        emit Approval(msg.sender, delegate, numTokens);
+        return true;
     }
 
-    // 제어자(modifier) : 함수에 사용하는 애드온으로 추가적인 논리를 생성할 수 있게 한다. 조건문.
-    // create modifier so that only person who can call the contract is the owner.
-    modifier onlyOwner {
-        require(msg.sender == owner);
-        _; // 밑줄 문자를 입력하면 함수가 계속됨.
+    ///////////////
+}
+
+
+contract DEX {
+    event Bought(uint256 amount);
+    event Sold(uint256 amount);
+    IERC20 public token;
+    
+    constructor() {
+        token = new ERC20Basic();
     }
 
-    // 1. 할아버지가 정말로 돌아가셨는지
-    // create modifier so that we only allocate funds if friend's gramps deceased  
-    modifier mustBeDeceased {
-        require(deceased == true);
-        _;
+    function buy() payable public {
+        uint256 amountTobuy = msg.value;
+        uint256 dexBalance = token.balanceOf(address(this));
+        require(amountTobuy > 0, "You need to send some ether");
+        require(amountTobuy <= dexBalance, "Not enough tokens in the reserve");
+        token.transfer(msg.sender, amountTobuy);
+        emit Bought(amountTobuy);
     }
 
-    // array : []
-    // 3. 증여자의 주소(지갑 주소)
-    // list of family wallets : 가족의 모든 지갑
-    address payable[] familyWallets;
-
-    // key-value
-    // 2. 증여하는 유산은 어느 정도인지
-    // map through inheritance : 누가 얼만큼의 유산을 받을지 기록되어 있음
-    mapping(address => uint) inheritance;
-
-    // set inheritance for each address : 누가 얼만큼의 유산을 받을지 설정
-    function setInheritance(address payable wallet, uint amount) public {
-        // to add wallets to the family wallets : .push
-        familyWallets.push(wallet);
-        inheritance[wallet] = amount;
-    }     
-
-    // pay each family member based on their wallet address
-    function payout() private mustBeDeceased {
-        // with a for loop you can loop through things and set conditions
-        for(uint i=0; i<familyWallets.length; i++) {
-            // transfering the funds contract address to receiver address
-            familyWallets[i].transfer(inheritance[familyWallets[i]]);
-        }
+    function sell(uint256 amount) public {
+        require(amount > 0, "You need to sell at least some tokens");
+        uint256 allowance = token.allowance(msg.sender, address(this));
+        require(allowance >= amount, "Check the token allowance");
+        token.transferFrom(msg.sender, address(this), amount);
+        payable(msg.sender).transfer(amount);
+        emit Sold(amount);
     }
 }
