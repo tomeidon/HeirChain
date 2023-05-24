@@ -24,19 +24,19 @@ interface IERC20 {
 contract Heir is ERC20 {
     using SafeMath for uint256;
     
-    /////////////////////////////// klaytn approve https://ko.docs.klaytn.foundation/content/smart-contract/sample-contracts/erc-20/1-erc20
-    function approve(address spender, uint256 value) public returns (bool) {
-        _approve(msg.sender, spender, value);
-        return true;
-    }
-    function _approve(address owner, address spender, uint256 value) internal {
-        require(owner != address(0), "ERC20: approve from the zero address");
-        require(spender != address(0), "ERC20: approve to the zero address");
+    // /////////////////////////////// klaytn approve https://ko.docs.klaytn.foundation/content/smart-contract/sample-contracts/erc-20/1-erc20
+    // function approve(address spender, uint256 value) public returns (bool) {
+    //     _approve(msg.sender, spender, value);
+    //     return true;
+    // }
+    // function _approve(address owner, address spender, uint256 value) internal {
+    //     require(owner != address(0), "ERC20: approve from the zero address");
+    //     require(spender != address(0), "ERC20: approve to the zero address");
 
-        _allowances[owner][spender] = value;
-        emit Approval(owner, spender, value);
-    }
-    /////////////////////////////// end
+    //     _allowances[owner][spender] = value;
+    //     emit Approval(owner, spender, value);
+    // }
+    // /////////////////////////////// end
 
     //////////////TRANSFERS AND APPROVAL OF ERC-20 TOKENS FROM A SOLIDITY SMART CONTRACT 
     // https://ethereum.org/el/developers/tutorials/transfers-and-approval-of-erc-20-tokens-from-a-solidity-smart-contract/
@@ -64,10 +64,11 @@ contract Heir is ERC20 {
 	// (User address => will)
 	mapping (address => WillItem[]) private _wills;
 
+
     // mint가 필요한지?
-    // constructor() public WithFees(), ERC20("Wile I Live Lot", "WILL") {
-	// 	_mint(msg.sender, 1e27);
-    // }
+    constructor() public ERC20() {
+		_mint(msg.sender, 1e27);
+    }
 	
 	function getAmounts(address user, address token) external view {
 		return _amounts[user][token];

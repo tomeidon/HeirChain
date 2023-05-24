@@ -30,7 +30,6 @@ function App() {
     11155111 : {name : "Sepolia", symbol : "SepoliaETH"},
     5777 : {name : "Ganache", symbol : "ETH"},
     1337 : {name : "Ganache", symbol : "ETH"}
-
   }
 
 
