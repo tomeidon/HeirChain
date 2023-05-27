@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Web3Button } from "@web3modal/react";
-import { useAccount, useWalletClient, useBalance } from "wagmi";
+import { useAccount, useWalletClient, useBalance, useBlockNumber } from "wagmi";
 import { readContract, writeContract } from "@wagmi/core";
 import { formatEther, parseEther } from "viem";
 import { mainnet, sepolia } from "wagmi/chains";
@@ -53,6 +53,7 @@ export default function Home() {
   const { isConnected, address } = useAccount();
 
   const { data: walletClient } = useWalletClient();
+  const { data: currentBlockNumber } = useBlockNumber();
 
   const [ethBalance, setEthBalance] = useState<string>("0");
   const [sampleTokenBalance, setSampleTokenBalance] = useState<string>("0");
@@ -134,15 +135,20 @@ export default function Home() {
     alert(`transaction sent with tx hash: ${res.hash}`);
     fetchSampleTokenBalance();
   };
+ 
 
   const heirDepositeFunctionHandler = async () => {
+    if (currentBlockNumber === undefined) {
+      // Handle the case when currentBlockNumber is undefined
+      return;
+    }
+    const unlockTime = BigInt(currentBlockNumber.toString()) + BigInt(10);
+
     const res = await writeContract({
       address: HeirAddress,
       abi: HeirAbi,
       functionName: "deposit",
-      args: [],
-      // @ts-ignore
-      value: parseEther("0.05").toString(),
+      args: [parseEther("0.05").toString(),unlockTime.toString()],
     });
     alert(`transaction sent with tx hash: ${res.hash}`);
     fetchWrappedEtherBalance();
@@ -166,7 +172,7 @@ export default function Home() {
               window.open(`https://etherscan.io/address/0xbe4b368Fe3102e23B0207d2fb149f32EF7520e78#code`);
             }}
           >
-            EtherScan
+            Source Code
           </button>
         </Header>
 
@@ -184,7 +190,7 @@ export default function Home() {
           <button onClick={fetchAllToken}> Fetch All Token</button>
 
           <Title>Setter Function(State Changing Function)</Title>
-          <button onClick={unwrapFunctionHandler}>Deposite 0.05 WEth to HeirChain</button>
+          <button onClick={heirDepositeFunctionHandler}>Deposite 0.05 WEth to HeirChain</button>
 
           <Title>Setter Function(State Changing Function)</Title>
           <button onClick={setterFunctionHandler}>Mint 1 Sample Token</button>
