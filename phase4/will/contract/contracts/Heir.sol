@@ -1,59 +1,78 @@
-pragma solidity >=0.7.0 <0.9.0;
+// Solidity files have to start with this pragma.
+// It will be used by the Solidity compiler to validate its version.
+pragma solidity ^0.8.0;
 
-// 유언장 스마트 계약 : 어떤 할아버지가 돌아가시면서 증손자에게는 20 이더를, 증손녀에게는 10 이더를 주기로 했다면?
+import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
 contract Heir {
-    // 확인 사항 3가지
-    // 1. 할아버지가 정말로 돌아가셨는지, 2. 증여하는 유산은 어느 정도인지, 3. 증여자의 주소(지갑 주소)
 
-    bool    deceased;
-    uint    fortune;
-    address owner;
+    address private constant wETHAddress = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2; // wETH 컨트랙트 주소
 
-    // 생성자 : Solidity 스마트 계약을 배포할 때 실행되는 특별한 함수로 생성자를 통해 오브젝트를 만든다. 초기값을 설정할 수 있다.
-    // payable : 함수가 이더를 보내고 받을 수 있게 만든다.
-    constructor() payable public {
-        owner = msg.sender; // msg sender represents address that is being called
-        fortune = msg.value; // msg value tells us how much ether is being sent
-        deceased = false;
+    struct Deposit {
+        address depositor;
+        uint256 amount;
+        uint256 unlockTime;
     }
 
-    // 제어자(modifier) : 함수에 사용하는 애드온으로 추가적인 논리를 생성할 수 있게 한다. 조건문.
-    // create modifier so that only person who can call the contract is the owner.
-    modifier onlyOwner {
-        require(msg.sender == owner);
-        _; // 밑줄 문자를 입력하면 함수가 계속됨.
-    }
+    mapping(address => Deposit) public deposits;
 
-    // 1. 할아버지가 정말로 돌아가셨는지
-    // create modifier so that we only allocate funds if friend's gramps deceased  
-    modifier mustBeDeceased {
-        require(deceased == true);
+    event DepositMade(address indexed depositor, uint256 amount, uint256 unlockTime);
+    event WithdrawalMade(address indexed recipient, uint256 amount, uint256 timestamp);
+    event UnlockTimeExtended(address indexed recipient, uint256 newUnlockTime);
+    event TransferOwnership(address indexed currentOwner, address indexed newOwner);
+
+    address private owner;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can call this function");
         _;
     }
 
-    // array : []
-    // 3. 증여자의 주소(지갑 주소)
-    // list of family wallets : 가족의 모든 지갑
-    address payable[] familyWallets;
+    constructor() {
+        owner = msg.sender;
+    }
 
-    // key-value
-    // 2. 증여하는 유산은 어느 정도인지
-    // map through inheritance : 누가 얼만큼의 유산을 받을지 기록되어 있음
-    mapping(address => uint) inheritance;
+    function deposit(uint256 amount, uint256 unlockTime) external {
+        require(unlockTime > block.timestamp, "Unlock time must be in the future");
 
-    // set inheritance for each address : 누가 얼만큼의 유산을 받을지 설정
-    function setInheritance(address payable wallet, uint amount) public {
-        // to add wallets to the family wallets : .push
-        familyWallets.push(wallet);
-        inheritance[wallet] = amount;
-    }     
+        IERC20 wETH = IERC20(wETHAddress);
+        require(wETH.transferFrom(msg.sender, address(this), amount), "Transfer failed");
 
-    // pay each family member based on their wallet address
-    function payout() private mustBeDeceased {
-        // with a for loop you can loop through things and set conditions
-        for(uint i=0; i<familyWallets.length; i++) {
-            // transfering the funds contract address to receiver address
-            familyWallets[i].transfer(inheritance[familyWallets[i]]);
-        }
+        Deposit memory newDeposit = Deposit(msg.sender, amount, unlockTime);
+        deposits[msg.sender] = newDeposit;
+
+        emit DepositMade(msg.sender, amount, unlockTime);
+    }
+
+    function withdraw() external {
+        Deposit memory depositorDeposit = deposits[msg.sender];
+        require(depositorDeposit.amount > 0, "No deposit found");
+        require(block.timestamp >= depositorDeposit.unlockTime, "Withdrawal not yet available");
+
+        IERC20 wETH = IERC20(wETHAddress);
+        require(wETH.transfer(msg.sender, depositorDeposit.amount), "Transfer failed");
+
+        emit WithdrawalMade(msg.sender, depositorDeposit.amount, block.timestamp);
+
+        delete deposits[msg.sender];
+    }
+
+    function extendUnlockTime(uint256 newUnlockTime) external {
+        Deposit storage depositorDeposit = deposits[msg.sender];
+        require(depositorDeposit.amount > 0, "No deposit found");
+        require(newUnlockTime > depositorDeposit.unlockTime, "New unlock time must be later than the current unlock time");
+
+        depositorDeposit.unlockTime = newUnlockTime;
+
+        emit UnlockTimeExtended(msg.sender, newUnlockTime);
+    }
+
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "Invalid new owner");
+        emit TransferOwnership(owner, newOwner);
+        owner = newOwner;
     }
 }
