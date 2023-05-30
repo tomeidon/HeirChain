@@ -10,7 +10,8 @@ Inheritance of cryptocurrency according to the will
 [ Team Name ] Kill Satoshin
 
 [ Team Members ] 방시연(students), 김재성(auditors), 박주현(students)
- [ Mentor ] 한재원
+
+[ Mentor ] 한재원
 
 
 ### Problem & Motivation
