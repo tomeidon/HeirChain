@@ -1,7 +1,7 @@
 # HeirChain
 Inheritance of cryptocurrency according to the will
 
-<a name="br1"></a>Web3@KAIST Proposal
+### <a name="br1"></a>Web3@KAIST Proposal
 
 [ Project Title ] Heir Chain : Inheritance of cryptocurrency according to the will
 
