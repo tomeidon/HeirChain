@@ -12,11 +12,13 @@ Inheritance of cryptocurrency according to the will
 [ Team Members ] 방시연(students), 김재성(auditors), 박주현(students)
  [ Mentor ] 한재원
 
+
 ### Problem & Motivation
 
 Death can come to anyone, assets within a blockchain wallet there is no way to recover, so there have been many cases
 of losing huge assets.[1](#br1)[ ](#br1)The private key of the cryptocurrency cold wallet is complexly set to safely protect the user's
  assets, but in case of loss, there is no way to recover, so there have been many cases of losing huge assets.[2](#br1)
+
 
 ### Solution
 
@@ -35,12 +37,14 @@ death, the assets in the wallet will be transferred to the predetermined heir or
 
 (4) The heir or charity becomes aware of the existence of the will and inheritance only at the moment of inheritance.
 
+
 ### Why Blockchain?
 
 Blockchain technology enables the use of smart contracts to automate the process of checking the survival of the wallet
 owner and transferring assets to the heir or charity. This provides transparency and eliminates the risk of losing assets.
 Writing a will is difficult to access because it requires witnesses and complex procedures. However, this service is easily
 accessible and user-friendly, making it convenient to use.
+
 
 ### Constraints & Details
 
