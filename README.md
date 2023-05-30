@@ -57,4 +57,5 @@ accessible and user-friendly, making it convenient to use.
  heir or charity receives a fair share of the remaining assets.
 
 1 https://www.cbc.ca/news/canada/nova-scotia/quadriga-widow-jennifer-roberston-gerald-cotten-1.6318955
+
 2 https://www.coolwallet.io/bitcoin-lost-private-key-horror-stories/
