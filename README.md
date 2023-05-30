@@ -26,11 +26,12 @@ To address this challenge, the proposed project aims to develop a cryptocurrency
 wallet owners using a smart contract. The service will allow wallet owners to write a will, and in the event of sudden
 death, the assets in the wallet will be transferred to the predetermined heir or charity.
 
-~~Target:~~ The target audience for this service is cryptocurrency wallet owners, estimated to be around 81 million.
-~~Overview:~~ The proposed solution involves the following steps:
+Target: The target audience for this service is cryptocurrency wallet owners, estimated to be around 81 million.
+Overview: The proposed solution involves the following steps:
 
 (1) The wallet owner applies for the service and writes a will specifying the predetermined heir or charity.
- (2) The smart contract checks the survival of the wallet owner every year.
+
+(2) The smart contract checks the survival of the wallet owner every year.
 
 (3) If the wallet owner's survival is not confirmed, a percentage of the remaining assets will be transferred to the
  predetermined heir or charity.
